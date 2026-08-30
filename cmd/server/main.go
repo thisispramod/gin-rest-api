@@ -34,3 +34,5 @@ gin-rest-api/
 │
 ├── go.mod
 └── go.sum
+
+*/

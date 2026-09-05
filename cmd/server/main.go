@@ -35,4 +35,18 @@ gin-rest-api/
 ├── go.mod
 └── go.sum
 
+
+server
+   ↓
+HTTP API
+
+worker
+   ↓
+Background Jobs
+
+migration
+   ↓
+Database Migration
+
+
 */

@@ -44,6 +44,7 @@ func (r *ProductRepository) GetByID(id int) (*model.Product, bool) {
 }
 
 func (r *ProductRepository) Create(product model.Product) model.Product {
+	product.ID = len(r.products) + 1
 	r.products = append(r.products, product)
 	return product
 }

@@ -16,4 +16,6 @@ func SetupRoutes(
 
 	api.GET("/products/:id", productHandler.GetProductByID)
 
+	api.POST("/products", productHandler.CreateProduct)
+
 }

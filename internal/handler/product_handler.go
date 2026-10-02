@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"gin-rest-api/internal/model"
 	"gin-rest-api/internal/service"
 	"net/http"
 	"strconv"
@@ -49,4 +50,23 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": product,
 	})
+}
+
+func (h *ProductHandler) CreateProduct(c *gin.Context) {
+	var product model.Product
+
+	err := c.ShouldBindJSON(&product)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request body", // 400 bad request
+		})
+		return
+	}
+
+	createProduct := h.service.CreateProduct(product)
+
+	c.JSON(http.StatusCreated, gin.H{
+		"data": createProduct,
+	}) // 201 Created
+
 }

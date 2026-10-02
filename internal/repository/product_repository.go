@@ -35,9 +35,9 @@ func (r *ProductRepository) GetAll() []model.Product {
 // Get Product by Id
 
 func (r *ProductRepository) GetByID(id int) (*model.Product, bool) {
-	for _, product := range r.products {
-		if product.ID == id {
-			return &product, true
+	for i := range r.products {
+		if r.products[i].ID == id {
+			return &r.products[i], true
 		}
 	}
 	return nil, false

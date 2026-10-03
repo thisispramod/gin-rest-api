@@ -1,12 +1,15 @@
 package handler
 
 import (
-	"gin-rest-api/internal/model"
-	"gin-rest-api/internal/service"
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+
+	"gin-rest-api/internal/model"
+	"gin-rest-api/internal/service"
 )
 
 type ProductHandler struct {
@@ -51,14 +54,44 @@ func (h *ProductHandler) GetProductByID(c *gin.Context) {
 		"data": product,
 	})
 }
-
 func (h *ProductHandler) CreateProduct(c *gin.Context) {
 	var product model.Product
 
 	err := c.ShouldBindJSON(&product)
+
 	if err != nil {
+
+		if err != nil {
+			var validationErrors validator.ValidationErrors
+
+			if errors.As(err, &validationErrors) {
+				errorMessages := make(map[string]string)
+
+				for _, fieldError := range validationErrors {
+					fieldName := fieldError.Field()
+
+					switch fieldError.Tag() {
+					case "required":
+						errorMessages[fieldName] = fieldName + " is required"
+
+					case "min":
+						errorMessages[fieldName] = fieldName + " must be at least 2 characters"
+
+					case "gt":
+						errorMessages[fieldName] = fieldName + " must be greater than 0"
+					}
+				}
+
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error":  "validation failed",
+					"fields": errorMessages,
+				})
+				return
+			}
+		}
+
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "invalid request body", // 400 bad request
+			"error": "Invalid request body",
 		})
 		return
 	}
@@ -67,6 +100,5 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"data": createProduct,
-	}) // 201 Created
-
+	})
 }

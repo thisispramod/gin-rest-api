@@ -20,4 +20,6 @@ func SetupRoutes(
 
 	api.PUT("/products/:id", productHandler.UpdateProduct)
 
+	api.DELETE("/products/:id", productHandler.DeleteProduct)
+
 }

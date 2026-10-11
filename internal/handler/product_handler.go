@@ -131,3 +131,26 @@ func (h *ProductHandler) UpdateProduct(c *gin.Context) {
 		"data": updatedProduct,
 	})
 }
+
+func (h *ProductHandler) DeleteProduct(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid product id",
+		})
+	}
+
+	deleted := h.service.DeleteProduct(id)
+
+	if !deleted {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "product not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "product deleted successfully",
+	})
+}

@@ -18,4 +18,6 @@ func SetupRoutes(
 
 	api.POST("/products", productHandler.CreateProduct)
 
+	api.PUT("/products/:id", productHandler.UpdateProduct)
+
 }

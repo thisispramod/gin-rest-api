@@ -61,3 +61,16 @@ func (r *ProductRepository) Delete(id int) bool {
 	}
 	return false
 }
+
+func (r *ProductRepository) Update(id int, product model.Product) (*model.Product, bool) {
+
+	for i := range r.products {
+		if r.products[i].ID == id {
+			product.ID = id
+			r.products[i] = product
+			return &r.products[i], true
+		}
+	}
+	return nil, false
+
+}

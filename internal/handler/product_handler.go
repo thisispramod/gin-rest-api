@@ -61,33 +61,31 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 
 	if err != nil {
 
-		if err != nil {
-			var validationErrors validator.ValidationErrors
+		var validationErrors validator.ValidationErrors
 
-			if errors.As(err, &validationErrors) {
-				errorMessages := make(map[string]string)
+		if errors.As(err, &validationErrors) {
+			errorMessages := make(map[string]string)
 
-				for _, fieldError := range validationErrors {
-					fieldName := fieldError.Field()
+			for _, fieldError := range validationErrors {
+				fieldName := fieldError.Field()
 
-					switch fieldError.Tag() {
-					case "required":
-						errorMessages[fieldName] = fieldName + " is required"
+				switch fieldError.Tag() {
+				case "required":
+					errorMessages[fieldName] = fieldName + " is required"
 
-					case "min":
-						errorMessages[fieldName] = fieldName + " must be at least 2 characters"
+				case "min":
+					errorMessages[fieldName] = fieldName + " must be at least 2 characters"
 
-					case "gt":
-						errorMessages[fieldName] = fieldName + " must be greater than 0"
-					}
+				case "gt":
+					errorMessages[fieldName] = fieldName + " must be greater than 0"
 				}
-
-				c.JSON(http.StatusBadRequest, gin.H{
-					"error":  "validation failed",
-					"fields": errorMessages,
-				})
-				return
 			}
+
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error":  "validation failed",
+				"fields": errorMessages,
+			})
+			return
 		}
 
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -100,5 +98,36 @@ func (h *ProductHandler) CreateProduct(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"data": createProduct,
+	})
+}
+
+func (h *ProductHandler) UpdateProduct(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid product id",
+		})
+	}
+
+	var product model.Product
+	if err := c.ShouldBindJSON(&product); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request body",
+		})
+		return
+	}
+
+	updatedProduct, found := h.service.UpdateProduct(id, product)
+
+	if !found {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "product not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": updatedProduct,
 	})
 }

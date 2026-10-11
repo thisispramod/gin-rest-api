@@ -30,3 +30,7 @@ func (s *ProductService) CreateProduct(product model.Product) model.Product {
 func (s *ProductService) DeleteProduct(id int) bool {
 	return s.repository.Delete(id)
 }
+
+func (s *ProductService) UpdateProduct(id int, product model.Product) (*model.Product, bool) {
+	return s.repository.Update(id, product)
+}
